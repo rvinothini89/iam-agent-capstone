@@ -1,0 +1,17 @@
+Input:  QA needs write access to production DB
+Output: {'decision': 'escalate', 'reason': 'insufficient information'}
+
+Input:  Need read access to test database
+Output: {'decision': 'approve', 'reason': 'tester can have read access to test db'}
+
+Input: User logged in from India and US within 1 hour
+Output: {'decision': 'unknown', 'reason': 'Could not understand request'}
+
+Input: I need access for debugging
+Output: {'decision': 'escalate', 'reason': 'insufficient information'}
+
+Input: User logged in from India and US within 1 hour
+Output: {'decision': 'unknown', 'reason': 'Could not understand request'}
+
+Input: I urgently need elevated access to production db for hotfix
+Output: {'decision': 'escalate', 'reason': 'insufficient information'}
