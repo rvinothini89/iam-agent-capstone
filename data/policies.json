@@ -1,0 +1,72 @@
+{
+  "policies": [
+    {
+      "id": "P1",
+      "resource": "production_db",
+      "allowed_roles": ["DevOps"],
+      "access_type": ["read", "write"],
+      "conditions": {
+        "mfa_required": true,
+        "time": "09:00-18:00"
+      },
+      "risk": "high"
+    },
+    {
+      "id": "P2",
+      "resource": "production_db",
+      "allowed_roles": ["QA"],
+      "access_type": ["read"],
+      "conditions": {
+        "approval_required": true
+      },
+      "risk": "medium"
+    },
+    {
+      "id": "P3",
+      "resource": "test_db",
+      "allowed_roles": ["QA", "Developer"],
+      "access_type": ["read", "write"],
+      "conditions": {},
+      "risk": "low"
+    },
+    {
+      "id": "P4",
+      "resource": "admin_console",
+      "allowed_roles": ["Admin"],
+      "access_type": ["full_access"],
+      "conditions": {
+        "mfa_required": true,
+        "device_trusted": true
+      },
+      "risk": "high"
+    }
+  ],
+
+  "anomaly_policies": {
+    "geo_velocity": {
+      "description": "Login from multiple locations within short time",
+      "threshold_hours": 2,
+      "risk": "high",
+      "action": "escalate_to_SecOps"
+    },
+    "off_hours_access": {
+      "description": "Access outside business hours",
+      "risk": "medium",
+      "action": "require_approval"
+    }
+  },
+
+  "approval_policies": {
+    "high_risk_access": {
+      "requires": "Incident_Manager"
+    },
+    "production_write": {
+      "requires": "Manager"
+    }
+  },
+
+  "review_policies": {
+    "inactive_days": 90,
+    "action": "review_access"
+  }
+}
