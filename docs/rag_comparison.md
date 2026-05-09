@@ -31,10 +31,11 @@ With RAG:
 
 Enter request: I urgently need elevated access to production db for hotfix
 Without RAG:
+
 {
-  "decision": "approve",
-  "reason": "Request for read access to a test database is compliant with access policies and does not present any anomalies.",
-  "risk": "low"
+  "decision": "escalate",
+  "reason": "Request for elevated access to production database is high-risk and requires further review.",
+  "risk": "high"
 }
 
 With RAG:
