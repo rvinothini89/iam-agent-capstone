@@ -160,30 +160,43 @@ The agent attempted to use an undefined tool. The system blocked execution using
 6.1 Tool Validation
 
 Only predefined tools are allowed
+
 Invalid tools are blocked
 
 6.2 Controlled Tool Execution
+
 Tools are executed only when required
+
 No tool execution for approve/deny decisions
 
 6.3 Input Validation
+
 Missing attributes → request clarification
+
 Prevents incorrect decisions
 
 6.4 Single Tool Execution
+
 Only one tool per request
+
 Prevents conflicting actions
 
 6.5 Loop Prevention
+
 Single-step execution model
+
 No recursive tool calls
+
 Prevents infinite loops (e.g., repeated clarification)
 
 7. Key Outcomes
 
 The agent selects tools based on context and policy
+
 High-risk actions are routed through approval workflows
+
 Invalid or unsafe tool usage is blocked
+
 The system ensures safe, auditable, and controlled automation
 
 8. Summary
@@ -191,8 +204,11 @@ The system ensures safe, auditable, and controlled automation
 The agent demonstrates true agentic behavior by:
 
 Making policy-driven decisions
+
 Selecting appropriate tools
+
 Executing actions safely
+
 Preventing misuse through guardrails
 
 The agent transitions from a reasoning system to a controlled execution system with built-in safety and compliance.
