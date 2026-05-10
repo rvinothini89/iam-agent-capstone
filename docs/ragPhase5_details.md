@@ -30,6 +30,7 @@ Example 1: High-Risk Access Request
 Input:
 
 QA needs write access to production DB
+
 Response:
 {
   "request_type": "access_request",
@@ -51,6 +52,7 @@ Example 2: Low-Risk Access Request
 Input:
 
 Need read access to test database  
+
 Response:
 {
   "request_type": "access_request",
@@ -69,6 +71,7 @@ Example 3: Missing Information
 Input:
 
 I urgently need elevated access to production db for hotfix
+
 
 Response:
 {
@@ -91,6 +94,7 @@ Example 4: Anomaly Detection
 Input:
 
 User logged in from India and US within 1 hour
+
 
 Response:
 {
