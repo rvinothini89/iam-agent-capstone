@@ -28,6 +28,7 @@ request_clarification	ask_user_details	Collect missing input
 Example 1: High-Risk Access Request
 
 Input:
+
 QA needs write access to production DB
 Response:
 {
@@ -48,6 +49,7 @@ Response:
 Example 2: Low-Risk Access Request
 
 Input:
+
 Need read access to test database  
 Response:
 {
@@ -65,6 +67,7 @@ Response:
 Example 3: Missing Information
 
 Input:
+
 I urgently need elevated access to production db for hotfix
 
 Response:
@@ -86,6 +89,7 @@ Response:
 Example 4: Anomaly Detection
 
 Input:
+
 User logged in from India and US within 1 hour
 
 Response:
