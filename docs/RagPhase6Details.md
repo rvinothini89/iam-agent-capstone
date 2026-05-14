@@ -2,13 +2,23 @@
 
 ## Objective
 
-Enhance the IAM agent to support:
+Enhance the IAM system with multi-turn reasoning and context-aware interactions across three personas:
 
-* Multi-step reasoning and planning
-* Short-term and long-term memory
-* Context-aware multi-turn conversations
-* Memory retention and reset behavior
-* Improved conversational quality
+* End User
+* IAM Decision Agent
+* IAM Security Agent
+
+The goal of this phase was to improve conversational continuity, reduce repeated questioning, and support context-aware access evaluation.
+
+---
+
+# Persona Responsibilities
+
+| Persona            | Responsibility                                                          |
+| ------------------ | ----------------------------------------------------------------------- |
+| End User           | Submits access requests and provides missing details incrementally      |
+| IAM Decision Agent | Maintains memory, planning, and conversation state                      |
+| IAM Security Agent | Applies security validation and risk evaluation using collected context |
 
 ---
 
@@ -16,7 +26,7 @@ Enhance the IAM agent to support:
 
 ## Multi-Step Reasoning (Planning)
 
-The agent follows a structured reasoning workflow before making decisions.
+The IAM Decision Agent performs structured reasoning before producing a decision.
 
 ### Planning Steps
 
@@ -26,7 +36,7 @@ The agent follows a structured reasoning workflow before making decisions.
   "Merge with memory state",
   "Retrieve policies",
   "Evaluate compliance",
-  "Final decision"
+  "Generate Final decision"
 ]
 ```
 
@@ -49,23 +59,23 @@ The agent uses both:
 
 # Short-Term Memory
 
-## Components
+The IAM Decision Agent stores:
 
-### Conversation History
+* Conversation history
+* Extracted user attributes
+* Active request state
 
-Stores previous user-agent interactions during the session.
-
-### Structured State
+## Structured State
 
 ```python
 state = {
-  "role": None,
-  "access_type": None,
-  "resource": None
+  "role": "QA",
+  "access_type": "write",
+  "resource": "production_db"
 }
 ```
 
-## Purpose
+### Purpose
 
 * Track user attributes incrementally
 * Avoid repeated questions
@@ -83,7 +93,9 @@ Memory is persisted using:
 memory_store.json
 ```
 
-## Purpose
+This allows the IAM Decision Agent to retain relevant context across interactions.
+
+### Purpose
 
 * Retain state across sessions
 * Improve continuity
@@ -93,23 +105,20 @@ memory_store.json
 
 # Memory Retention Rules
 
-The following retention behavior was implemented:
+The IAM Decision Agent follows controlled memory retention behavior:
 
-| Rule                     | Behavior                                      |
-| ------------------------ | --------------------------------------------- |
-| Session continuity       | Memory retained during ongoing request flow   |
-| Relevant context only    | Only role, access_type, and resource retained |
-| Latest input wins        | New inputs override previous state            |
-| Reset support            | User can explicitly clear memory              |
-| Stale context prevention | New requests do not blindly reuse old state   |
+* Retain only relevant request attributes
+* Use latest user input as highest priority
+* Prevent stale context reuse
+* Allow explicit memory reset
 
 ---
 
 # Memory Reset Behavior
 
-The agent supports explicit memory clearing.
+The End User can explicitly clear memory.
 
-### Example
+## Example
 
 ```text
 User: reset
@@ -126,7 +135,7 @@ Agent: Memory cleared.
 
 # Context-Aware Multi-Turn Conversation
 
-The agent combines:
+The IAM Decision Agent combines information incrementally across turns:
 
 * Current user input
 * Conversation history
@@ -136,32 +145,52 @@ to complete incomplete requests across multiple turns.
 
 ---
 
-# Demonstration: Improved Conversation Quality
+# Context-Aware Multi-Turn Interaction
 
----
+The IAM Decision Agent combines information incrementally across turns.
 
-# Before (Without Memory)
-
-The agent behaved statelessly and repeatedly asked for the same information.
+## Example
 
 ```text
-User: I need access
-Agent: Please provide role and access type
+End User: I need access
+IAM Decision Agent: Please provide role and access type
 
-User: QA
-Agent: Please provide role and access type ❌
+End User: QA
+IAM Decision Agent: Please provide access type
 
-User: write access
-Agent: Please provide role and access type ❌
+End User: write access
+IAM Security Agent: Escalating request for approval
 ```
 
 ---
 
-# After (With Memory + Planning)
+# Demonstration: Improved Conversation Quality
 
-The agent now remembers previous inputs and asks only for missing information.
+## Before (Without Memory)
 
-### Example 1: QA Write Access Request
+The agent behaved statelessly and repeatedly asked for the same information.
+
+```text
+User: QA
+Agent: Please provide role and access type
+```
+
+Repeated clarification occurred because no context was retained.
+
+---
+
+## After (With Memory + Planning)
+
+```text
+User: QA
+Agent: Please provide access type
+```
+
+The IAM Decision Agent remembered the previously provided role and only requested missing information.
+
+---
+
+# Example 1: QA Write Access Request
 
 ```text
 User: I need access
@@ -174,10 +203,9 @@ User: write access
 Agent: Escalating request for approval
 ```
 
-### Actual execution output: 
+## Actual Execution Output
 
 ```json
-Response:
 {
   "request_type": "access_request",
   "decision": "escalate",
@@ -205,7 +233,7 @@ Response:
 
 # Example 2: Developer Read Access to Test DB
 
-### Conversation Flow
+## Conversation Flow
 
 ```text
 User: I need access
@@ -213,10 +241,9 @@ User: dev
 User: read access, test db
 ```
 
-### Actual execution output: 
+## Actual Execution Output
 
 ```json
-Response:
 {
   "request_type": "access_request",
   "decision": "approve",
@@ -236,18 +263,19 @@ Response:
 ```
 
 ---
+
 # State Enforcement Logic
 
 The agent uses state enforcement to prevent repeated clarification loops.
 
-## Behavior
+### Behavior
 
-* If required attributes already exist in memory:
+If required attributes already exist in memory:
 
-  * Do not ask again
-  * Continue evaluation
+* Do not ask again
+* Continue evaluation
 
-## Benefit
+### Benefit
 
 * Eliminates infinite clarification loops
 * Improves reliability
