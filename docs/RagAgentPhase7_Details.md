@@ -2,48 +2,51 @@
 
 ## Objective
 
-Enhance the IAM agent to support adaptive behavior by:
+Enhance the IAM system with adaptive behavior capabilities across three personas:
 
-* Collecting feedback from users
-* Storing feedback for future interactions
-* Modifying future decisions based on feedback
-* Demonstrating behavioral improvement over time
+* End User
+* IAM Decision Agent
+* IAM Security Agent
+
+The goal of this phase was to allow the system to collect feedback, store it for future interactions, and modify future decisions using controlled adaptation logic.
 
 ---
 
-# Features Implemented
+# Persona Responsibilities
 
-## Feedback Collection
+| Persona            | Responsibility                                                  |
+| ------------------ | --------------------------------------------------------------- |
+| End User           | Provides feedback about access decisions                        |
+| IAM Decision Agent | Stores feedback and applies adaptive decision logic             |
+| IAM Security Agent | Ensures adaptive decisions remain controlled and security-aware |
 
-The agent accepts explicit user feedback using a feedback command.
+---
 
-### Example
+# Feedback Collection
 
-```text
+The End User can explicitly provide feedback.
+
+## Example
+
+```text id="4f4xw0"
 feedback: qa write access test_db should be approved
 ```
 
-### Behavior
-
-* Feedback is captured from user input
-* Stored for future interactions
-* Used to influence later decisions
+The IAM Decision Agent captures and stores this feedback for future evaluations.
 
 ---
 
 # Feedback Storage
 
-## Implementation
-
 Feedback is persisted in:
 
-```text
+```text id="y3wfxn"
 feedback_store.json
 ```
 
-## Example Stored Feedback
+## Example
 
-```json
+```json id="jlwmqa"
 [
   {
     "feedback": "qa write access test_db should be approved"
@@ -53,152 +56,104 @@ feedback_store.json
 
 ---
 
-# Adaptive Behaviour Logic
+# Adaptive Behaviour Flow
 
-The agent applies a feedback-driven adaptation layer after policy evaluation.
-
-## Adaptation Flow
-
-```text
-User Request
+```text id="jlwmqb"
+End User
+    ↓
+IAM Decision Agent
     ↓
 Policy Evaluation
     ↓
 Feedback Adaptation Layer
+    ↓
+IAM Security Agent Validation
     ↓
 Final Decision
 ```
 
 ---
 
-# Adaptation Strategy
+# Behaviour Modification
 
-If previous feedback indicates that a certain request is acceptable:
-
-* The agent adjusts future decisions
-* Overrides previous policy outcome
-* Produces modified behavior
+The IAM Decision Agent applies stored feedback to modify future decisions.
 
 ---
 
-# Before vs After Behaviour
+# Before Feedback
 
-## BEFORE FEEDBACK
+## Input
 
-The base policy denied the request.
-
-### Input
-
-```text
+```text id="jlwmqc"
 QA need write access to test db
 ```
 
-### Output
+## Output
 
-```json
+```json id="jlwmqd"
 {
-  "decision": "deny",
-  "reason": "Write access is not allowed for QA role"
+  "decision": "deny"
 }
 ```
 
-### Explanation
-
-* The original policy did not permit QA write access to `test_db`
-* Decision was based strictly on policy rules
+The IAM Security Agent denied the request because the original policy did not permit QA write access to `test_db`.
 
 ---
 
-# FEEDBACK PROVIDED
+# Feedback Provided
 
-### Input
+## Input
 
-```text
+```text id="jlwmqe"
 feedback: qa write access test_db should be approved
 ```
 
-### Output
-
-```text
-Feedback stored.
-```
-
 ---
 
-# AFTER FEEDBACK
+# After Feedback
 
-The same request now produces different behavior.
+## Input
 
-### Input
-
-```text
+```text id="jlwmqf"
 QA need write access to test db
 ```
 
-### Output
+## Output
 
-```json
+```json id="jlwmqg"
 {
   "decision": "approve",
-  "reason": "Behavior adapted based on previous feedback indicating QA write access to test_db is acceptable.",
-  "risk": "low"
+  "reason": "Behavior adapted based on previous feedback"
 }
 ```
+
+The IAM Decision Agent modified the behavior using stored feedback while the IAM Security Agent validated the adjusted decision.
 
 ---
 
 # What Changed?
 
-| Before                    | After                      |
-| ------------------------- | -------------------------- |
-| Request denied            | Request approved           |
-| Strict policy enforcement | Feedback-adjusted behavior |
-| No adaptation             | Adaptive decision-making   |
-
----
-
-# Why the Behavior Changed
-
-The agent detected stored feedback matching the current request context:
-
-```text
-QA + write access + test_db
-```
-
-Based on this feedback:
-
-* The agent identified the request as acceptable
-* The adaptive layer modified the original decision
-* Final behavior changed from deny → approve
+| Before               | After                          |
+| -------------------- | ------------------------------ |
+| Strict policy denial | Feedback-adjusted approval     |
+| Static behavior      | Adaptive behavior              |
+| No learning          | Feedback-aware decision-making |
 
 ---
 
 # Failure Mode Identified
 
-During implementation, a role extraction issue was discovered.
+A role extraction issue was discovered during implementation.
 
 ## Problem
 
-The logic:
+Substring matching incorrectly detected:
 
-```python
-if "dev" in text
+```text id="jlwmqh"
+"dev" inside "need"
 ```
 
-incorrectly matched:
-
-```text
-need
-```
-
-because `"dev"` existed as a substring.
-
-This caused:
-
-```text
-QA need access
-→ role incorrectly became Developer
-```
+This caused incorrect role assignment.
 
 ---
 
@@ -206,68 +161,28 @@ QA need access
 
 Regex word-boundary matching was implemented:
 
-```python
+```python id="jlwmqi"
 re.search(r"\bdev\b", text)
 ```
 
-## Benefit
-
-* Matches only complete words
-* Prevents unintended role detection
-* Improves extraction reliability
-
----
-
-# Feedback Persistence
-
-The stored feedback remains available across sessions because it is persisted in:
-
-```text
-feedback_store.json
-```
-
-This enables:
-
-* Reusable adaptation
-* Persistent learning behavior
-* Context continuity
-
----
-
-# Important Note
-
-The agent does not retrain the LLM.
-
-Instead:
-
-```text
-Behavior is modified using feedback-driven decision rules.
-```
-
-This provides controlled and explainable adaptation.
+This improved extraction accuracy and prevented unintended persona behavior.
 
 ---
 
 # Outcome
 
-| Requirement                       | Status       |
-| --------------------------------- | ------------ |
-| Store feedback                    | Implemented  |
-| Modify behavior based on feedback | Implemented  |
-| Demonstrate before vs after       | Demonstrated |
-| Explain adaptation logic          | Completed    |
+| Capability                     | Status      |
+| ------------------------------ | ----------- |
+| Feedback collection            | Implemented |
+| Feedback persistence           | Implemented |
+| Adaptive decision behavior     | Implemented |
+| Persona-aware adaptation       | Implemented |
+| Controlled security validation | Implemented |
 
 ---
 
 # Final Summary
 
-The IAM agent was enhanced with adaptive behavior capabilities using feedback-driven decision adjustment.
+Phase 7 introduced adaptive behavior into the IAM system using persona-driven feedback workflows.
 
-The agent can now:
-
-* Store user feedback
-* Reuse feedback in future evaluations
-* Modify decisions dynamically
-* Demonstrate behavioral improvement over time
-
-This enables a more intelligent and context-aware access management workflow.
+The End User provides feedback, the IAM Decision Agent stores and applies adaptation logic, and the IAM Security Agent ensures that adaptive decisions remain controlled and security-aware.
