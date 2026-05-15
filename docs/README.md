@@ -39,7 +39,6 @@ Inputs:
 Outputs:
 - Decision (approve / deny / escalate)
 - Reasoning (policy + risk explanation)
-- Confidence level (optional)
 - Next action (approval request / escalation / clarification)
 
 Success Criteria
