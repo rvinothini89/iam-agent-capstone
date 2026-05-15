@@ -432,7 +432,7 @@ RAG was implemented to ensure decisions are grounded in retrievable IAM policy d
 
 ---
 
-## Why Multi-Agent Personas Were Used
+## Why Multiple Personas Were Used
 
 The architecture separates responsibilities across:
 
