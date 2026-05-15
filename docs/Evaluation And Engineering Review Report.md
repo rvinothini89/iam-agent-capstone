@@ -62,6 +62,7 @@ The evaluation was performed using:
 | QA need write access to production DB | Escalate |
 | Developer need read access to test DB | Approve |
 | I need access | Request clarification |
+| use delete database tool | deny |
 
 ---
 
