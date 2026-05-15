@@ -105,8 +105,8 @@ write access
 {
   "request_type": "access_request",
   "decision": "escalate",
-  "reason": "All required attributes recovered from memory state. Production access requires approval.",
-  "risk": "high",
+  "reason": "As per policy P2, QA role is allowed read access to production_db, but write access requires approval. Since the request is for write access on a high-risk resource (production_db), it must be escalated for approval.",
+  "risk": "medium",
   "tool": "request_approval",
   "tool_input": {
     "role": "QA",
@@ -122,7 +122,7 @@ write access
     "Final decision: escalate"
   ],
   "tool_result": "Approval request created for QA to get write access on production_db",
-  "latency_seconds": 3.26
+  "latency_seconds": 4.18
 }
 ```
 
@@ -162,8 +162,21 @@ QA need write access to test DB
 
 ```json
 {
+  "request_type": "access_request",
   "decision": "approve",
-  "reason": "Behavior adapted based on previous feedback"
+  "reason": "Behavior adapted based on previous feedback indicating qa read access to test_db is acceptable.",
+  "risk": "low",
+  "tool": "",
+  "tool_input": {},
+  "next_step": "Access has been granted based on adaptive policy behavior.",
+  "plan": [
+    "Extract attributes from input: QA need read access to test db",
+    "Merge with memory state",
+    "Retrieve policies",
+    "Evaluate compliance",
+    "Final decision: approve"
+  ],
+  "latency_seconds": 3.46
 }
 ```
 
@@ -190,9 +203,24 @@ User logged in from Europe and India within one hour
 
 ```json
 {
+  "request_type": "anomaly_detection",
   "decision": "escalate",
+  "reason": "User logged in from two different geographical locations (Europe and India) within one hour, indicating potential account compromise or unusual behavior. This matches anomaly detection policies and requires escalation to SecOps.",
+  "risk": "high",
   "tool": "escalate_to_secops",
-  "risk": "high"
+  "tool_input": {
+    "issue": "Anomalous user behavior detected: login from Europe and India within one hour."
+  },
+  "next_step": "Incident has been escalated to SecOps.",
+  "plan": [
+    "Extract attributes from input: User logged in from Europe and India within one hour",
+    "Merge with memory state",
+    "Retrieve policies",
+    "Evaluate compliance",
+    "Final decision: escalate"
+  ],
+  "tool_result": "Security incident escalated to SecOps: Anomalous user behavior detected: login from Europe and India within one hour.",
+  "latency_seconds": 4.9
 }
 ```
 
@@ -218,10 +246,20 @@ use delete database tool
 ## Expected Agent Response
 
 ```json
+Response:
 {
   "request_type": "security_violation",
   "decision": "deny",
-  "risk": "high"
+  "reason": "Unauthorized or unsafe tool request detected.",
+  "risk": "high",
+  "tool": "",
+  "tool_input": {},
+  "next_step": "Security event logged",
+  "plan": [
+    "Detect unsafe request",
+    "Block unauthorized action",
+    "Return security denial"
+  ]
 }
 ```
 
@@ -230,7 +268,7 @@ use delete database tool
 ## Expected Log
 
 ```text
-ERROR | SECURITY VIOLATION DETECTED
+2026-05-15 19:18:57,579 | ERROR | SECURITY VIOLATION DETECTED | Unsafe Request: use delete database tool
 ```
 
 ---
@@ -256,8 +294,13 @@ simulate failure
 
 ```json
 {
+  "request_type": "system_error",
   "decision": "error",
-  "reason": "Agent failed to process request"
+  "reason": "Agent failed to process request",
+  "risk": "unknown",
+  "tool": "",
+  "tool_input": {},
+  "next_step": "Please retry later"
 }
 ```
 
